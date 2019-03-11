@@ -10,16 +10,11 @@ using System.Windows.Forms;
 
 namespace Tiger_Services_Ticketing_App
 {
-    public partial class Form1 : Form
+    public partial class Third_Party : Form
     {
-        public Form1()
+        public Third_Party()
         {
             InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
