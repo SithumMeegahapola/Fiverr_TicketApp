@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
@@ -20,6 +21,28 @@ namespace Tiger_Services_Ticketing_App
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SqlConnection sqlcon = new SqlConnection(@"Data Source=DESKTOP-2L7SMKJ; Initial Catalog=TS_Ticketing; Persist Security Info=True; User ID=sa; Password=TSSQL_db");
+            sqlcon.Open();
+            string query = "SELECT * from App_Users WHERE (User_Name='" + textBox1.Text + "') AND (User_Password='" + textBox2.Text+"')";
+            SqlDataAdapter sda = new SqlDataAdapter(query, sqlcon);
+            DataTable dt = new DataTable();
+            sda.Fill(dt);
+            if(dt.Rows.Count>0)
+            {
+                MainWindow mw = new MainWindow();
+                mw.Show();
+                this.Hide();
+                sqlcon.Close();
+            }
+            else
+            {
+                MessageBox.Show("Invalid Credentiols");
+                sqlcon.Close();
+            }
         }
     }
 }

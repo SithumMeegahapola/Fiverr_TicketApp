@@ -16,5 +16,34 @@ namespace Tiger_Services_Ticketing_App
         {
             InitializeComponent();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Customer_Complaints cc = new Customer_Complaints();
+            this.Hide();
+            cc.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Customer_Compliment ccl = new Customer_Compliment();
+            this.Hide();
+            ccl.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Injury inj = new Injury();
+            this.Hide();
+            inj.Show();
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Third_Party tpc = new Third_Party();
+            this.Hide();
+            tpc.Show();
+        }
     }
 }
