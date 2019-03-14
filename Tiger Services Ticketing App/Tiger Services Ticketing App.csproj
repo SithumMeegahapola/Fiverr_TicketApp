@@ -124,7 +124,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\B31184A8-411C-41C4-8FC9-F641C22EEE36.ico" />
     <Content Include="Images\imageedit_1_4602328341.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

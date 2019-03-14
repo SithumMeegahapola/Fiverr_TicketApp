@@ -20,21 +20,21 @@ namespace Tiger_Services_Ticketing_App
         private void button1_Click(object sender, EventArgs e)
         {
             Customer_Complaints cc = new Customer_Complaints();
-            this.Hide();
             cc.Show();
+            this.Dispose();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             Customer_Compliment ccl = new Customer_Compliment();
-            this.Hide();
+            this.Dispose();
             ccl.Show();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             Injury inj = new Injury();
-            this.Hide();
+            this.Dispose();
             inj.Show();
 
         }
@@ -42,8 +42,13 @@ namespace Tiger_Services_Ticketing_App
         private void button4_Click(object sender, EventArgs e)
         {
             Third_Party tpc = new Third_Party();
-            this.Hide();
+            this.Dispose();
             tpc.Show();
+        }
+
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
