@@ -14,12 +14,15 @@ namespace Tiger_Services_Ticketing_App
 {
     public partial class Customer_Complaints : Form
     {
-        SqlConnection sqlcon;
-        string com_ID;
+        private SqlConnection sqlcon;
+        private string com_ID;
+        private string pcname = "";
         public Customer_Complaints()
         {
             InitializeComponent();
-            sqlcon = new SqlConnection(@"Data Source=DESKTOP-2L7SMKJ;Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+
+            pcname = System.Environment.MachineName;
+            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
 
         }
 
@@ -30,39 +33,7 @@ namespace Tiger_Services_Ticketing_App
 
             dateTimePicker2.Format = DateTimePickerFormat.Time;
             dateTimePicker2.ShowUpDown = true;
-
-            sqlcon.Open();
-            string getquery = "SELECT * FROM Customer_Complaints ";
-            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
-            DataTable dt = new DataTable();
-            sd.Fill(dt);
-            int count = dt.Rows.Count;
-            //getting the entered Complaints to create the new Complaint ID
-            com_ID = "";
-
-            if (count < 10)
-            {
-                com_ID = "Complaint0000" + count + 1;
-            }
-            else if (count < 100)
-            {
-                com_ID = "Complaint000" + count + 1;
-            }
-            else if (count < 1000)
-            {
-                com_ID = "Complaint00" + count + 1;
-            }
-            else if (count < 10000)
-            {
-                com_ID = "Complaint0" + count + 1;
-            }
-            else if (count < 100000)
-            {
-                com_ID = "Complaint" + count + 1;
-            }
-
-            Customer_Complaints.ActiveForm.Text = "Customer Complaints ID - " + com_ID;
-
+            loadID();
 
 
         }
@@ -76,8 +47,9 @@ namespace Tiger_Services_Ticketing_App
         {
             openFileDialog1.CheckFileExists = true;
             openFileDialog1.AddExtension = true;
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.Filter = "*.jpeg|*.png|*.pdf|*.doc";
+            openFileDialog1.Multiselect = false;
+            openFileDialog1.Filter = "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|" +
+                                    "Documents (*.docx;*.pdf*)|*.docx;*.pdf";
 
 
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -86,13 +58,17 @@ namespace Tiger_Services_Ticketing_App
                 label12.Text = "";
                 foreach (string filename in openFileDialog1.SafeFileNames)
                 {
-                    label12.Text += filename + " ";
+                    label12.Text += filename + ", ";
 
                 }
                 string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\");
+                if (!System.IO.Directory.Exists(path + "Customer_Complaints"))
+                {
+                    System.IO.Directory.CreateDirectory(path + "Customer_Complaints");
 
-                System.IO.Directory.CreateDirectory(path + com_ID);
-
+                }
+                string finalpath = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Compliment\");
+                System.IO.Directory.CreateDirectory(finalpath + com_ID);
 
             }
         }
@@ -113,18 +89,14 @@ namespace Tiger_Services_Ticketing_App
                 )
             {
                 //adding the filnames to save on DB
-                string uploadedfilenames="";
-                
+                string uploadedfilenames = "";
+
                 foreach (string filename in openFileDialog1.SafeFileNames)
                 {
 
-                    uploadedfilenames += filename+",";
+                    uploadedfilenames += filename + ", ";
 
                 }
-
-                MessageBox.Show(uploadedfilenames);
-                //uploading the data to the Server
-
 
                 //getting the text Boxes inputs
                 string name = textBox1.Text;
@@ -141,34 +113,19 @@ namespace Tiger_Services_Ticketing_App
 
 
 
-                //string query = "INSERT INTO  Customer_Complaints (Complaint_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files) " +
-                //               "VALUES (" + com_ID + ", " + name + ", " + phone + ", " + address + ", " + email + ", " + PRName + ", " + PRPhone + ", " + PREmail + ", " + Details + ", " + Time + ", " + Date + ", "+ uploadedfilenames+");";
-                //SqlCommand cmd = new SqlCommand(query, sqlcon);
-
-                SqlCommand command = new SqlCommand("insert",sqlcon);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Complaint_ID", com_ID);
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@Phone", phone);
-                command.Parameters.AddWithValue("@Address",address);
-                command.Parameters.AddWithValue("@EMail", email);
-                command.Parameters.AddWithValue("@P_R_Name", PRName);
-                command.Parameters.AddWithValue("@P_R_Phone", PRPhone);
-                command.Parameters.AddWithValue("@P_R_EMail", PREmail);
-                command.Parameters.AddWithValue("@Details", Details);
-                command.Parameters.AddWithValue("@Time_Of_Complaint", Time);
-                command.Parameters.AddWithValue("@Date_Of_Complaint", Date);
-                command.Parameters.AddWithValue("@Uploaded_Files", uploadedfilenames);
-
-
-                int number = command.ExecuteNonQuery();
+                string query = "INSERT INTO  Customer_Complaints(Complaint_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files) " +
+                               "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "');";
+                SqlCommand cmd = new SqlCommand(query, sqlcon);
+                sqlcon.Open();
+                int number = cmd.ExecuteNonQuery();
+                sqlcon.Close();
                 if (number > 0)
                 {
-                    MessageBox.Show("Successfull!!!! Form Reseting");
+                    MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     sqlcon.Close();
 
                     //copying the files to folder
-                    string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\");
+                    string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Complaints\");
 
                     string destpath = path + com_ID;
                     string sourcefile = "";
@@ -176,26 +133,20 @@ namespace Tiger_Services_Ticketing_App
                     foreach (string filename in openFileDialog1.FileNames)
                     {
                         sourcefile = filename;
+                        MessageBox.Show(sourcefile);
                         destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
-
+                        MessageBox.Show(destfile);
                         System.IO.File.Copy(sourcefile, destfile, true);
 
-                        uploadedfilenames += openFileDialog1.SafeFileName + ",";
-
                     }
+                    resetAll();
+                    loadID();
 
-
-
-                    Customer_Complaints_Load(sender,e);
                 }
                 else
                 {
-                    MessageBox.Show("Error Contact Admins");
+                    MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-
-
-
 
             }
             else
@@ -206,12 +157,57 @@ namespace Tiger_Services_Ticketing_App
 
         private void button4_Click(object sender, EventArgs e)
         {
-            MainWindow f1 = new MainWindow();
-            this.Dispose();
-            f1.Show();
+            this.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
+        {
+            resetAll();
+            loadID();
+        }
+
+
+
+        private void loadID()
+        {
+
+            sqlcon.Open();
+            string getquery = "SELECT * FROM Customer_Complaints ";
+            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
+            DataTable dt = new DataTable();
+            sd.Fill(dt);
+            int count = dt.Rows.Count + 1;
+            //getting the entered Complaints to create the new Complaint ID
+            com_ID = "";
+
+            if (count < 10)
+            {
+                com_ID = "Complaint_0000" + count;
+            }
+            else if (count < 100)
+            {
+                com_ID = "Complaint_000" + count;
+            }
+            else if (count < 1000)
+            {
+                com_ID = "Complaint_00" + count;
+            }
+            else if (count < 10000)
+            {
+                com_ID = "Complaint_0" + count;
+            }
+            else if (count < 100000)
+            {
+                com_ID = "Complaint_" + count;
+            }
+
+            this.Text = "Customer Complaints ID - " + com_ID;
+
+
+            sqlcon.Close();
+        }
+
+        private void resetAll()
         {
             textBox1.Text = "";
             textBox2.Text = "";
@@ -223,8 +219,9 @@ namespace Tiger_Services_Ticketing_App
             textBox8.Text = "";
 
             openFileDialog1.Reset();
-
-
         }
+
+
+
     }
 }

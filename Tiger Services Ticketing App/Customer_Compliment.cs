@@ -8,37 +8,42 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class Customer_Compliment : Form
     {
-        SqlConnection sqlcon;
+
+        private SqlConnection sqlcon;
+        private string com_ID;
+        private string pcname = "";
         public Customer_Compliment()
         {
             InitializeComponent();
-            sqlcon = new SqlConnection(@"Data Source=DESKTOP-2L7SMKJ;Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+
+            pcname = System.Environment.MachineName;
+            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+        }
+        private void Customer_Compliment_Load(object sender, EventArgs e)
+        {
+            dateTimePicker1.Format = DateTimePickerFormat.Custom;
+            dateTimePicker1.CustomFormat = "dd mm yyyy";
+
+            dateTimePicker2.Format = DateTimePickerFormat.Time;
+            dateTimePicker2.ShowUpDown = true;
+            loadID();
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            MainWindow ss = new MainWindow();
-            ss.Show();
-            this.Dispose();
+            this.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "";
-            textBox2.Text = "";
-            textBox3.Text = "";
-            textBox4.Text = "";
-            textBox5.Text = "";
-            textBox6.Text = "";
-            textBox7.Text = "";
-            textBox8.Text = "";
-
-            openFileDialog1.Reset();
+            resetAll();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -55,42 +60,14 @@ namespace Tiger_Services_Ticketing_App
                 textBox8.Text != ""
                 )
             {
-                //getting uploaded data if not empyt
-                
+                //adding the filnames to save on DB
+                string uploadedfilenames = "";
 
-
-
-
-
-                //uploading the data to the Server
-                sqlcon.Open();
-                string getquery = "SELECT * FROM Customer_Compliment ";
-                SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
-                DataTable dt = new DataTable();
-                sd.Fill(dt);
-                int count = dt.Rows.Count;
-                //getting the entered Complaints to create the new Complaint ID
-                string com_ID = "";
-
-                if (count < 10)
+                foreach (string filename in openFileDialog1.SafeFileNames)
                 {
-                    com_ID = "Compliment0000" + count + 1;
-                }
-                else if (count < 100)
-                {
-                    com_ID = "Complimentt000" + count + 1;
-                }
-                else if (count < 1000)
-                {
-                    com_ID = "Compliment00" + count + 1;
-                }
-                else if (count < 10000)
-                {
-                    com_ID = "Compliment0" + count + 1;
-                }
-                else if (count < 100000)
-                {
-                    com_ID = "Compliment" + count + 1;
+
+                    uploadedfilenames += filename + ", ";
+
                 }
 
                 //getting the text Boxes inputs
@@ -102,29 +79,44 @@ namespace Tiger_Services_Ticketing_App
                 int PRPhone = int.Parse(textBox6.Text);
                 string PREmail = textBox7.Text;
                 string Details = textBox8.Text;
-                DateTime Date = dateTimePicker1.Value.Date;
-                DateTime Time = dateTimePicker2.Value;
+                string Date = dateTimePicker1.Value.ToShortDateString();
+                string Time = dateTimePicker2.Value.ToShortTimeString();
 
-
-                string query = "INSERT INTO  Customer_Complaints (Complaint_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files) " +
-                               "VALUES (" + com_ID + ", " + name + ", " + phone + ", " + address + ", " + email + ", " + PRName + ", " + PRPhone + ", " + PREmail + ", " + Details + ", " + Date + ", " + Time + ")";
+                
+                string query = "INSERT INTO  Customer_Compliment(Compliment_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files) " +
+                               "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "');";
                 SqlCommand cmd = new SqlCommand(query, sqlcon);
-
+                sqlcon.Open();
                 int number = cmd.ExecuteNonQuery();
+                sqlcon.Close();
                 if (number > 0)
                 {
-                    MessageBox.Show("Successfull!!!! Form Reseting");
+                    MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     sqlcon.Close();
-                    button3.PerformClick();
+
+                    //copying the files to folder
+                    string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Compliment\");
+
+                    string destpath = path + com_ID;
+                    string sourcefile = "";
+                    string destfile = "";
+                    foreach (string filename in openFileDialog1.FileNames)
+                    {
+                        sourcefile = filename;
+
+                        destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
+
+                        System.IO.File.Copy(sourcefile, destfile, true);
+
+                    }
+                    resetAll();
+                    loadID();
+
                 }
                 else
                 {
-                    MessageBox.Show("Error Contact Admins");
+                    MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-
-
-
 
             }
             else
@@ -135,8 +127,87 @@ namespace Tiger_Services_Ticketing_App
 
         private void button1_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.ShowDialog();
+            openFileDialog1.CheckFileExists = true;
+            openFileDialog1.AddExtension = true;
+            openFileDialog1.Multiselect = false;
+            openFileDialog1.Filter = "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|" +
+                                    "Documents (*.docx;*.pdf*)|*.docx;*.pdf";
+
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+
+                label12.Text = "";
+                foreach (string filename in openFileDialog1.SafeFileNames)
+                {
+                    label12.Text += filename + ", ";
+
+                }
+                string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\");
+                if (!System.IO.Directory.Exists(path + "Customer_Compliment"))
+                {
+                    System.IO.Directory.CreateDirectory(path + "Customer_Compliment");
+
+                }
+                string finalpath = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Compliment\");
+                System.IO.Directory.CreateDirectory(finalpath + com_ID);
+
+            }
         }
+
+
+        private void loadID()
+        {
+
+            sqlcon.Open();
+            string getquery = "SELECT * FROM Customer_Compliment ";
+            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
+            DataTable dt = new DataTable();
+            sd.Fill(dt);
+            int count = dt.Rows.Count + 1;
+            //getting the entered Complaints to create the new Complaint ID
+            com_ID = "";
+
+            if (count < 10)
+            {
+                com_ID = "Compliment_0000" + count;
+            }
+            else if (count < 100)
+            {
+                com_ID = "Compliment_000" + count;
+            }
+            else if (count < 1000)
+            {
+                com_ID = "Compliment_00" + count;
+            }
+            else if (count < 10000)
+            {
+                com_ID = "Compliment_0" + count;
+            }
+            else if (count < 100000)
+            {
+                com_ID = "Compliment_" + count;
+            }
+
+            this.Text = "Customer Compliment ID - " + com_ID;
+
+
+            sqlcon.Close();
+        }
+
+        private void resetAll()
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            textBox4.Text = "";
+            textBox5.Text = "";
+            textBox6.Text = "";
+            textBox7.Text = "";
+            textBox8.Text = "";
+
+            openFileDialog1.Reset();
+        }
+
     }
 }

@@ -33,9 +33,9 @@ namespace Tiger_Services_Ticketing_App
             sda.Fill(dt);
             if(dt.Rows.Count>0)
             {
-                MainWindow mw = new MainWindow();
-                mw.Show();
-                this.Hide();
+                MainWindow.ActiveForm.Show();
+                this.Dispose();
+                this.Close();
                 sqlcon.Close();
             }
             else
@@ -43,6 +43,11 @@ namespace Tiger_Services_Ticketing_App
                 MessageBox.Show("Invalid Credentiols");
                 sqlcon.Close();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
