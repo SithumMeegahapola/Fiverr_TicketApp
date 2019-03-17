@@ -71,5 +71,13 @@ namespace Tiger_Services_Ticketing_App
             f1.FormClosing += OpendFormClosing;
           
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            TicketView tv = new TicketView();
+            tv.Show();
+            this.Hide();
+            tv.FormClosing += OpendFormClosing;
+        }
     }
 }

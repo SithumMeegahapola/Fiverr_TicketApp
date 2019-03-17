@@ -143,6 +143,9 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(186, 23);
             this.textBox2.TabIndex = 8;
+            this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
+            this.textBox2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyUp);
             // 
             // textBox3
             // 
@@ -175,6 +178,8 @@
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(186, 23);
             this.textBox6.TabIndex = 12;
+            this.textBox6.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox6_KeyPress);
+            this.textBox6.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox6_KeyUp);
             // 
             // textBox7
             // 

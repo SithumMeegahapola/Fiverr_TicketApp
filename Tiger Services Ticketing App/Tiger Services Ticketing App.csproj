@@ -82,6 +82,12 @@
     <Compile Include="Third_Party.Designer.cs">
       <DependentUpon>Third_Party.cs</DependentUpon>
     </Compile>
+    <Compile Include="TicketView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TicketView.Designer.cs">
+      <DependentUpon>TicketView.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Customer_Complaints.resx">
       <DependentUpon>Customer_Complaints.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +115,9 @@
     </Compile>
     <EmbeddedResource Include="Third_Party.resx">
       <DependentUpon>Third_Party.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TicketView.resx">
+      <DependentUpon>TicketView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
