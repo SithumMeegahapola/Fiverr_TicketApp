@@ -54,8 +54,21 @@ namespace Tiger_Services_Ticketing_App
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-           
-           
+
+            this.Hide();
+            Form1 fm = new Form1();
+            fm.ShowDialog();
+
+            string name = Form1.getLogedName();
+            if(name.Equals("sdennis90"))
+            {
+                button6.Visible = true;
+            }
+            else
+            {
+                button6.Visible = false;
+            }
+            
         }
 
         private void OpendFormClosing(Object sender, FormClosingEventArgs e)
@@ -78,6 +91,16 @@ namespace Tiger_Services_Ticketing_App
             tv.Show();
             this.Hide();
             tv.FormClosing += OpendFormClosing;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            
+            User_Managment us = new User_Managment();
+            this.Hide();
+            us.Show();
+            
+            us.FormClosing += OpendFormClosing;
         }
     }
 }

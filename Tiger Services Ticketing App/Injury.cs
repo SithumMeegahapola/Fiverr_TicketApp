@@ -35,6 +35,7 @@ namespace Tiger_Services_Ticketing_App
             dateTimePicker2.ShowUpDown = true;
             loadID();
 
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -47,91 +48,105 @@ namespace Tiger_Services_Ticketing_App
                 textBox5.Text != "" &&
                 textBox6.Text != "" &&
                 textBox7.Text != "" &&
-                textBox8.Text != ""
+                textBox8.Text != "" &&
+                textBox9.Text != "" &&
+                textBox10.Text != "" &&
+                textBox11.Text != "" &&
+                textBox12.Text != "" &&
+                textBox13.Text != "" &&
+                textBox14.Text != "" &&
+                comboBox1.SelectedIndex>-1 &&
+                comboBox2.SelectedIndex > -1 &&
+                comboBox3.SelectedIndex > -1 &&
+                comboBox4.SelectedIndex > -1
                 )
             {
-                //adding the filnames to save on DB
-                string uploadedfilenames = "";
-
-                foreach (string filename in openFileDialog1.SafeFileNames)
+                DialogResult rs = MessageBox.Show("Are you Sure you want to submit?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (rs == DialogResult.OK)
                 {
+                    //adding the filnames to save on DB
+                    string uploadedfilenames = "";
 
-                    uploadedfilenames += filename + ", ";
-
-                }
-
-                //getting the text Boxes inputs
-                string name = textBox1.Text;
-                int phone = int.Parse(textBox2.Text);
-                string address = textBox3.Text;
-                string email = textBox4.Text;
-                string PRName = textBox5.Text;
-                int PRPhone = int.Parse(textBox6.Text);
-                string PREmail = textBox7.Text;
-                string Details = textBox8.Text;
-                string Date = dateTimePicker1.Value.ToShortDateString();
-                string Time = dateTimePicker2.Value.ToShortTimeString();
-                string Teammember = comboBox1.SelectedItem.ToString();
-                string CusorGuest = comboBox2.SelectedItem.ToString();
-                string age = textBox9.Text;
-                string In_PName = textBox10.Text;
-                string hospital = textBox11.Text;
-                string nature = textBox12.Text;
-                string cause = textBox13.Text;
-                string firstaid_done = comboBox3.SelectedItem.ToString();
-                string who_doneFA = textBox14.Text;
-                string companyTime = comboBox4.SelectedItem.ToString();
-
-
-                string query = "INSERT INTO  Injury(Injury_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files," +
-                                "Team_Member,Customer_or_guest,Age_Injured_Person,Injured_PersonName,Hospitalisation,Nature_of_Injury,Cause_of_Injury,Firstaid_provided,Firstaid_PersonName,Comapany_ContactedTime,Ticket_Status) " +
-                               "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "'," +
-                               "'" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "'," +
-                               "'" + Teammember + "','" + CusorGuest + "','" + age + "','" + In_PName + "','" + hospital + "','" + nature + "','" + cause + "','" + firstaid_done + "','" + who_doneFA + "','" + companyTime + "','Open');";
-                SqlCommand cmd = new SqlCommand(query, sqlcon);
-                try
-                {
-                    sqlcon.Open();
-
-                    int number = cmd.ExecuteNonQuery();
-                    sqlcon.Close();
-                    if (number > 0)
+                    foreach (string filename in openFileDialog1.SafeFileNames)
                     {
-                        MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        uploadedfilenames += filename + ", ";
+
+                    }
+
+                    //getting the text Boxes inputs
+                    string name = textBox1.Text;
+                    int phone = int.Parse(textBox2.Text);
+                    string address = textBox3.Text;
+                    string email = textBox4.Text;
+                    string PRName = textBox5.Text;
+                    int PRPhone = int.Parse(textBox6.Text);
+                    string PREmail = textBox7.Text;
+                    string Details = textBox8.Text;
+                    string Date = dateTimePicker1.Value.ToShortDateString();
+                    string Time = dateTimePicker2.Value.ToShortTimeString();
+                    string Teammember = comboBox1.SelectedItem.ToString();
+                    string CusorGuest = comboBox2.SelectedItem.ToString();
+                    string age = textBox9.Text;
+                    string In_PName = textBox10.Text;
+                    string hospital = textBox11.Text;
+                    string nature = textBox12.Text;
+                    string cause = textBox13.Text;
+                    string firstaid_done = comboBox3.SelectedItem.ToString();
+                    string who_doneFA = textBox14.Text;
+                    string companyTime = comboBox4.SelectedItem.ToString();
+
+
+                    string query = "INSERT INTO  Injury(Injury_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files," +
+                                    "Team_Member,Customer_or_guest,Age_Injured_Person,Injured_PersonName,Hospitalisation,Nature_of_Injury,Cause_of_Injury,Firstaid_provided,Firstaid_PersonName,Comapany_ContactedTime,Ticket_Status) " +
+                                   "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "'," +
+                                   "'" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "'," +
+                                   "'" + Teammember + "','" + CusorGuest + "','" + age + "','" + In_PName + "','" + hospital + "','" + nature + "','" + cause + "','" + firstaid_done + "','" + who_doneFA + "','" + companyTime + "','Open');";
+                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    try
+                    {
+                        sqlcon.Open();
+
+                        int number = cmd.ExecuteNonQuery();
                         sqlcon.Close();
-
-                        if (!label12.Text.Equals("No Files Selected"))
+                        if (number > 0)
                         {
-                            //copying the files to folder
-                            string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Injury\");
+                            MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            sqlcon.Close();
 
-                            string destpath = path + com_ID;
-                            string sourcefile = "";
-                            string destfile = "";
-                            foreach (string filename in openFileDialog1.FileNames)
+                            if (!label12.Text.Equals("No Files Selected"))
                             {
-                                sourcefile = filename;
+                                //copying the files to folder
+                                string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Injury\");
 
-                                destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
+                                string destpath = path + com_ID;
+                                string sourcefile = "";
+                                string destfile = "";
+                                foreach (string filename in openFileDialog1.FileNames)
+                                {
+                                    sourcefile = filename;
 
-                                System.IO.File.Copy(sourcefile, destfile, true);
+                                    destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
 
+                                    System.IO.File.Copy(sourcefile, destfile, true);
+
+                                }
                             }
+                            resetAll();
+                            loadID();
+
                         }
-                        resetAll();
-                        loadID();
-
+                        else
+                        {
+                            MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
-                    else
+                    catch (Exception)
                     {
-                        MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Contact Admin with Error - Server Insert Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Contact Admin with Error - Server Insert Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
 
+                }
             }
             else
             {
@@ -210,6 +225,7 @@ namespace Tiger_Services_Ticketing_App
 
 
             openFileDialog1.Reset();
+            label12.Text = "No Files Selected";
         }
 
         private void button1_Click(object sender, EventArgs e)

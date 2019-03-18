@@ -13,6 +13,13 @@ namespace Tiger_Services_Ticketing_App
 {
     public partial class Form1 : Form
     {
+        private static string logedName = "";
+
+        public static string getLogedName()
+        {
+            return logedName;
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -34,7 +41,7 @@ namespace Tiger_Services_Ticketing_App
             if(dt.Rows.Count>0)
             {
                 MainWindow.ActiveForm.Show();
-                this.Dispose();
+                logedName = textBox1.Text;
                 this.Close();
                 sqlcon.Close();
             }

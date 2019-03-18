@@ -36,6 +36,8 @@ namespace Tiger_Services_Ticketing_App
             dateTimePicker2.ShowUpDown = true;
             loadID();
 
+            
+
 
         }
 
@@ -89,81 +91,85 @@ namespace Tiger_Services_Ticketing_App
                 textBox8.Text != ""
                 )
             {
-                //adding the filnames to save on DB
-                string uploadedfilenames = "";
-
-                foreach (string filename in openFileDialog1.SafeFileNames)
+                DialogResult rs = MessageBox.Show("Are you Sure you want to submit?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (rs == DialogResult.OK)
                 {
+                    //adding the filnames to save on DB
+                    string uploadedfilenames = "";
 
-                    uploadedfilenames += filename + ", ";
-
-                }
-
-                //getting the text Boxes inputs
-
-                string name = textBox1.Text;
-                int phone = int.Parse(textBox2.Text);
-                string address = textBox3.Text;
-                string email = textBox4.Text;
-                string PRName = textBox5.Text;
-                int PRPhone = int.Parse(textBox6.Text);
-                string PREmail = textBox7.Text;
-                string Details = textBox8.Text;
-                string Date = dateTimePicker1.Value.ToShortDateString();
-                string Time = dateTimePicker2.Value.ToShortTimeString();
-
-
-
-
-
-                string query = "INSERT INTO  Customer_Complaints(Complaint_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files, Ticket_Status) " +
-                               "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
-
-
-
-                SqlCommand cmd = new SqlCommand(query, sqlcon);
-                try
-                {
-                    sqlcon.Open();
-                    int number = cmd.ExecuteNonQuery();
-                    sqlcon.Close();
-                    if (number > 0)
+                    foreach (string filename in openFileDialog1.SafeFileNames)
                     {
-                        MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        uploadedfilenames += filename + ", ";
+
+                    }
+
+                    //getting the text Boxes inputs
+
+                    string name = textBox1.Text;
+                    int phone = int.Parse(textBox2.Text);
+                    string address = textBox3.Text;
+                    string email = textBox4.Text;
+                    string PRName = textBox5.Text;
+                    int PRPhone = int.Parse(textBox6.Text);
+                    string PREmail = textBox7.Text;
+                    string Details = textBox8.Text;
+                    string Date = dateTimePicker1.Value.ToShortDateString();
+                    string Time = dateTimePicker2.Value.ToShortTimeString();
+
+
+
+
+
+                    string query = "INSERT INTO  Customer_Complaints(Complaint_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files, Ticket_Status) " +
+                                   "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
+
+
+
+                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    try
+                    {
+                        sqlcon.Open();
+                        int number = cmd.ExecuteNonQuery();
                         sqlcon.Close();
-                        if (!label12.Text.Equals("No Files Selected"))
+                        if (number > 0)
                         {
-                            //copying the files to folder
-                            string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Complaints\");
+                            MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            string destpath = path + com_ID;
-                            string sourcefile = "";
-                            string destfile = "";
-                            foreach (string filename in openFileDialog1.FileNames)
+                            sqlcon.Close();
+                            if (!label12.Text.Equals("No Files Selected"))
                             {
-                                sourcefile = filename;
-                                MessageBox.Show(sourcefile);
-                                destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
-                                MessageBox.Show(destfile);
-                                System.IO.File.Copy(sourcefile, destfile, true);
+                                //copying the files to folder
+                                string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Customer_Complaints\");
 
+                                string destpath = path + com_ID;
+                                string sourcefile = "";
+                                string destfile = "";
+                                foreach (string filename in openFileDialog1.FileNames)
+                                {
+                                    sourcefile = filename;
+                                    MessageBox.Show(sourcefile);
+                                    destfile = System.IO.Path.Combine(destpath, openFileDialog1.SafeFileName);
+                                    MessageBox.Show(destfile);
+                                    System.IO.File.Copy(sourcefile, destfile, true);
+
+                                }
                             }
+                            resetAll();
+                            loadID();
+
                         }
-                        resetAll();
-                        loadID();
-
+                        else
+                        {
+                            MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
-                    else
+                    catch (Exception)
                     {
-                        MessageBox.Show("Try Again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Contact Admin with Error - Server Insert Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
                     }
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("Contact Admin with Error - Server Insert Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                }
-
             }
             else
             {
@@ -235,6 +241,7 @@ namespace Tiger_Services_Ticketing_App
             textBox8.Text = "";
 
             openFileDialog1.Reset();
+            label12.Text = "No Files Selected";
         }
 
         private void textBox2_KeyUp(object sender, KeyEventArgs e)
