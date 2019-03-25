@@ -7,17 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class Form1 : Form
     {
         private static string logedName = "";
+        MySqlConnection mycon;
+        string constring;
 
         public static string getLogedName()
         {
             return logedName;
+
         }
 
         public Form1()
@@ -27,28 +30,42 @@ namespace Tiger_Services_Ticketing_App
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+           
 
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SqlConnection sqlcon = new SqlConnection(@"Data Source=DESKTOP-2L7SMKJ; Initial Catalog=TS_Ticketing; Persist Security Info=True; User ID=sa; Password=TSSQL_db");
-            sqlcon.Open();
-            string query = "SELECT * from App_Users WHERE (User_Name='" + textBox1.Text + "') AND (User_Password='" + textBox2.Text+"')";
-            SqlDataAdapter sda = new SqlDataAdapter(query, sqlcon);
+
+           
+
+            string query = "SELECT * FROM `App_Users` WHERE `User_Name`= '" + textBox1.Text + "' AND `User_Password`= '" + textBox2.Text+"'";
+            MySqlDataAdapter msda = new MySqlDataAdapter(query, mycon);
+           
             DataTable dt = new DataTable();
-            sda.Fill(dt);
+            msda.Fill(dt);
             if(dt.Rows.Count>0)
             {
                 MainWindow.ActiveForm.Show();
                 logedName = textBox1.Text;
                 this.Close();
-                sqlcon.Close();
+                mycon.Close();
             }
             else
             {
                 MessageBox.Show("Invalid Credentiols");
-                sqlcon.Close();
+                mycon.Close();
             }
         }
 

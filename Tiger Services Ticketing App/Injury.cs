@@ -97,7 +97,7 @@ namespace Tiger_Services_Ticketing_App
                     string companyTime = comboBox4.SelectedItem.ToString();
 
 
-                    string query = "INSERT INTO  Injury(Injury_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files," +
+                    string query = "INSERT INTO  Injury(Injury_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Injury, Date_Of_Injury, Uploaded_Files," +
                                     "Team_Member,Customer_or_guest,Age_Injured_Person,Injured_PersonName,Hospitalisation,Nature_of_Injury,Cause_of_Injury,Firstaid_provided,Firstaid_PersonName,Comapany_ContactedTime,Ticket_Status) " +
                                    "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "'," +
                                    "'" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "'," +

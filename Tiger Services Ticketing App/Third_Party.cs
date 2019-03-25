@@ -93,7 +93,7 @@ namespace Tiger_Services_Ticketing_App
 
 
 
-                    string query = "INSERT INTO  Third_Party_Claim(Claim_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Complaint, Date_Of_Complaint, Uploaded_Files, Ticket_Status) " +
+                    string query = "INSERT INTO  Third_Party_Claim(Claim_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Claim, Date_Of_Claim, Uploaded_Files, Ticket_Status) " +
                                    "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
                     SqlCommand cmd = new SqlCommand(query, sqlcon);
                     try
