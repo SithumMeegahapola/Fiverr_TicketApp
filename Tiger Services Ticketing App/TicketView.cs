@@ -8,18 +8,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class TicketView : Form
     {
-        SqlConnection sqlcon;
+        private MySqlConnection mycon;
+        private string constring;
         public TicketView()
         {
             InitializeComponent();
-            
-            String pcname = System.Environment.MachineName;
-            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+                mycon.Close();
+
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
         private void TicketView_Load(object sender, EventArgs e)
@@ -32,11 +46,11 @@ namespace Tiger_Services_Ticketing_App
 
         private void button1_Click(object sender, EventArgs e)
         {
-            sqlcon.Open();
-            string query = "Select * from Customer_Complaints";
+            mycon.Open();
+            string query = "Select * from `Customer_Complaints`";
           
-            SqlDataAdapter adapter = new SqlDataAdapter(query, sqlcon);
-            SqlCommandBuilder cmdbuilder = new SqlCommandBuilder(adapter);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(query, mycon);
+           
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
@@ -44,57 +58,57 @@ namespace Tiger_Services_Ticketing_App
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.BackColor = Color.Purple;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.ForeColor = Color.White;
 
-            sqlcon.Close();
+            mycon.Close();
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            sqlcon.Open();
+            mycon.Open();
             
-            string query = "Select * from Customer_Compliment";
+            string query = "Select * from `Customer_Compliment`";
 
-            SqlDataAdapter adapter = new SqlDataAdapter(query, sqlcon);
-            SqlCommandBuilder cmdbuilder = new SqlCommandBuilder(adapter);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(query, mycon);
+            
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
             dataGridView1.DataSource = dt;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.BackColor = Color.Purple;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.ForeColor = Color.White;
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            sqlcon.Open();
-            string query = "Select * from Third_Party_Claim";
+            mycon.Open();
+            string query = "Select * from `Third_Party_Claim`";
 
-            SqlDataAdapter adapter = new SqlDataAdapter(query, sqlcon);
-            SqlCommandBuilder cmdbuilder = new SqlCommandBuilder(adapter);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(query, mycon);
+           
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
             dataGridView1.DataSource = dt;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.BackColor = Color.Purple;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.ForeColor = Color.White;
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            sqlcon.Open();
-            string query = "Select * from Injury";
+            mycon.Open();
+            string query = "Select * from `Injury`";
 
-            SqlDataAdapter adapter = new SqlDataAdapter(query, sqlcon);
-            SqlCommandBuilder cmdbuilder = new SqlCommandBuilder(adapter);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(query, mycon);
+         
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
             dataGridView1.DataSource = dt;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.BackColor = Color.Purple;
             dataGridView1.Columns["Ticket_Status"].DefaultCellStyle.ForeColor = Color.White;
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -106,15 +120,16 @@ namespace Tiger_Services_Ticketing_App
                 {
                     int id = dataGridView1.SelectedRows[0].Index;
                     DataGridViewRow dg = dataGridView1.Rows[id];
-                    string Cellvalue = dg.Cells[0].Value.ToString();
+                    string CellvalueID = dg.Cells[0].Value.ToString();
+                    string CellvalueCode = dg.Cells[1].Value.ToString();
                     
-                    if(Cellvalue.Contains("Complaint"))
+                    if(CellvalueCode.Contains("Complaint"))
                     {
-                        sqlcon.Open();
-                        string query = "UPDATE Customer_Complaints " +
-                                        "SET Ticket_Status = 'Closed' " +
-                                        "WHERE Complaint_ID= '"+Cellvalue+"';";
-                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        mycon.Open();
+                        string query = "UPDATE `Customer_Complaints` " +
+                                        "SET `Ticket_Status` = 'Closed' " +
+                                        "WHERE `Complaint_ID`= '"+ CellvalueID + "';";
+                        MySqlCommand cmd = new MySqlCommand(query, mycon);
                         int done = cmd.ExecuteNonQuery();
                         if(done >0)
                         {
@@ -125,18 +140,18 @@ namespace Tiger_Services_Ticketing_App
                         {
                             MessageBox.Show("Error Try Again");
                         }
-                        sqlcon.Close();
+                        mycon.Close();
                         button1.PerformClick();
 
 
                     }
-                    else if (Cellvalue.Contains("Compliment"))
+                    else if (CellvalueCode.Contains("Compliment"))
                     {
-                        sqlcon.Open();
-                        string query = "UPDATE  Customer_Compliment " +
-                                        "SET Ticket_Status = 'Closed' " +
-                                        "WHERE Compliment_ID= '" + Cellvalue + "';";
-                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        mycon.Open();
+                        string query = "UPDATE  `Customer_Compliment` " +
+                                        "SET `Ticket_Status` = 'Closed' " +
+                                        "WHERE `Compliment_ID`= '" + CellvalueID + "';";
+                        MySqlCommand cmd = new MySqlCommand(query, mycon);
                         int done = cmd.ExecuteNonQuery();
                         if (done > 0)
                         {
@@ -147,21 +162,21 @@ namespace Tiger_Services_Ticketing_App
                         {
                             MessageBox.Show("Error Try Again");
                         }
-                        sqlcon.Close();
+                        mycon.Close();
                         button2.PerformClick();
 
 
 
 
                     }
-                    else if (Cellvalue.Contains("Injury"))
+                    else if (CellvalueCode.Contains("Injury"))
                     {
-                        sqlcon.Open();
-                        MessageBox.Show(Cellvalue);
-                        string query = "UPDATE  Injury " +
-                                        "SET Ticket_Status = 'Closed' " +
-                                        "WHERE Injury_ID= '" + Cellvalue + "';";
-                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        mycon.Open();
+                     
+                        string query = "UPDATE  `Injury` " +
+                                        "SET `Ticket_Status` = 'Closed' " +
+                                        "WHERE `Injury_ID`= '" + CellvalueID + "';";
+                        MySqlCommand cmd = new MySqlCommand(query, mycon);
                         int done = cmd.ExecuteNonQuery();
                         if (done > 0)
                         {
@@ -172,21 +187,21 @@ namespace Tiger_Services_Ticketing_App
                         {
                             MessageBox.Show("Error Try Again");
                         }
-                        sqlcon.Close();
+                        mycon.Close();
                         button4.PerformClick();
 
 
 
 
                     }
-                    else if (Cellvalue.Contains("Claim"))
+                    else if (CellvalueCode.Contains("Claim"))
                     {
 
-                        sqlcon.Open();
-                        string query = "UPDATE  Third_Party_Claim " +
-                                        "SET Ticket_Status = 'Closed' " +
-                                        "WHERE Claim_ID = '" + Cellvalue + "';";
-                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        mycon.Open();
+                        string query = "UPDATE  `Third_Party_Claim` " +
+                                        "SET `Ticket_Status` = 'Closed' " +
+                                        "WHERE `Claim_ID` = '" + CellvalueID + "';";
+                        MySqlCommand cmd = new MySqlCommand(query, mycon);
                         int done = cmd.ExecuteNonQuery();
                         if (done > 0)
                         {
@@ -197,7 +212,7 @@ namespace Tiger_Services_Ticketing_App
                         {
                             MessageBox.Show("Error Try Again");
                         }
-                        sqlcon.Close();
+                        mycon.Close();
                         button3.PerformClick();
 
 

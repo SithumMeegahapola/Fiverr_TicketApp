@@ -36,7 +36,7 @@ namespace Tiger_Services_Ticketing_App
                 mycon = new MySqlConnection();
                 mycon.ConnectionString = constring;
                 mycon.Open();
-           
+                mycon.Close();
 
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
@@ -48,8 +48,8 @@ namespace Tiger_Services_Ticketing_App
         private void button1_Click(object sender, EventArgs e)
         {
 
-           
 
+            mycon.Open();
             string query = "SELECT * FROM `App_Users` WHERE `User_Name`= '" + textBox1.Text + "' AND `User_Password`= '" + textBox2.Text+"'";
             MySqlDataAdapter msda = new MySqlDataAdapter(query, mycon);
            

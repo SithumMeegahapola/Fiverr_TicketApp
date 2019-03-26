@@ -9,23 +9,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class Third_Party : Form
     {
 
-        private SqlConnection sqlcon;
+        private MySqlConnection mycon;
         private string com_ID;
-        private string pcname = "";
+        private string constring;
         Boolean Keywarn = false;
         public Third_Party()
         {
             InitializeComponent();
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+                mycon.Close();
 
-            pcname = System.Environment.MachineName;
-            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
 
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Third_Party_Load(object sender, EventArgs e)
@@ -92,19 +103,19 @@ namespace Tiger_Services_Ticketing_App
 
 
 
-
-                    string query = "INSERT INTO  Third_Party_Claim(Claim_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Claim, Date_Of_Claim, Uploaded_Files, Ticket_Status) " +
+                    
+                    string query = "INSERT INTO `Third_Party_Claim`(`Claim_Code`, `Name`, `Phone`, `Address`, `EMail`, `P_R_Name`, `P_R_Phone`, `P_R_EMail`, `Details`, `Time_Of_Claim`, `Date_Of_Claim`, `Uploaded_Files`, `Ticket_Status`)" +
                                    "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    MySqlCommand cmd = new MySqlCommand(query, mycon);
                     try
                     {
-                        sqlcon.Open();
+                        mycon.Open();
                         int number = cmd.ExecuteNonQuery();
-                        sqlcon.Close();
+                        mycon.Close();
                         if (number > 0)
                         {
                             MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            sqlcon.Close();
+                            mycon.Close();
                             if (!label12.Text.Equals("No Files Selected"))
                             {
                                 //copying the files to folder
@@ -180,15 +191,14 @@ namespace Tiger_Services_Ticketing_App
         private void loadID()
         {
 
-            sqlcon.Open();
-            string getquery = "SELECT * FROM Third_Party_Claim ";
-            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
+            mycon.Open();
+            string getquery = "SELECT * FROM `Third_Party_Claim` ";
+            MySqlDataAdapter sd = new MySqlDataAdapter(getquery, mycon);
             DataTable dt = new DataTable();
             sd.Fill(dt);
             int count = dt.Rows.Count + 1;
             //getting the entered Complaints to create the new Complaint ID
             com_ID = "";
-
             if (count < 10)
             {
                 com_ID = "Claim_0000" + count;
@@ -213,7 +223,7 @@ namespace Tiger_Services_Ticketing_App
             this.Text = "Customer Claim ID - " + com_ID;
 
 
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void resetAll()

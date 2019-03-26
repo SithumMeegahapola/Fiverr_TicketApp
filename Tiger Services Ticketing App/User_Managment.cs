@@ -8,20 +8,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class User_Managment : Form
     {
-        private SqlConnection sqlcon;
-        string userID = "";
-        private string pcname = "";
+        MySqlConnection mycon;
+        string constring;
+
+        string userID = "USER-";
         public User_Managment()
         {
             InitializeComponent();
-            pcname = System.Environment.MachineName;
-            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+                mycon.Close();
 
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void User_Managment_Load(object sender, EventArgs e)
@@ -36,44 +49,33 @@ namespace Tiger_Services_Ticketing_App
 
         private void loaddata ()
         {
-            sqlcon.Open();
-            string query = "select * from App_Users";
-            SqlDataAdapter sdp = new SqlDataAdapter(query, sqlcon);
-            SqlCommandBuilder cmdb = new SqlCommandBuilder(sdp);
+            mycon.Open();
+            string query = "SELECT * FROM `App_Users`";
+            MySqlDataAdapter myda = new MySqlDataAdapter(query, mycon);
+            
             DataTable dt = new DataTable();
-            sdp.Fill(dt);
+            myda.Fill(dt);
             dataGridView1.DataSource = dt;
 
-            int count = dataGridView1.Rows.Count+1;
-            if(count<10)
-            {
-                userID = "U-00" + count;
-            }
-            else if (count<100)
-            {
-                userID = "U-0" + count;
-            }
-            else if (count<1000)
-            {
-                userID = "U-" + count;
-            }
-            textBox4.Text = userID;
-            sqlcon.Close();
+            int count = dataGridView1.Rows.Count;
+           
+            textBox4.Text = userID+(count+1);
+            mycon.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count == 1)
             {
-                DialogResult rs = MessageBox.Show("Arre you sure you want to close this ticket?", "Sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                DialogResult rs = MessageBox.Show("Are you sure you want to delete this user?", "Sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 if (rs == DialogResult.OK)
                 {
                     int id = dataGridView1.SelectedRows[0].Index;
                     DataGridViewRow dg = dataGridView1.Rows[id];
                     string Cellvalue = dg.Cells[0].Value.ToString();
-                    sqlcon.Open();
-                    string query = "Delete FROM App_Users WHERE User_ID ='" + Cellvalue + "';";
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    mycon.Open();
+                    string query = "Delete FROM `App_Users` WHERE `User_ID` ='" + Cellvalue + "';";
+                    MySqlCommand cmd = new MySqlCommand(query, mycon);
                     int done = cmd.ExecuteNonQuery();
                     if (done > 0)
                     {
@@ -84,7 +86,7 @@ namespace Tiger_Services_Ticketing_App
                     {
                         MessageBox.Show("ERROR");
                     }
-                    sqlcon.Close();
+                    mycon.Close();
                     loaddata();
 
                 }
@@ -102,13 +104,13 @@ namespace Tiger_Services_Ticketing_App
             {
                 if(textBox2.Text.Equals(textBox3.Text))
                 {
-                    sqlcon.Open();
+                    mycon.Open();
                     string name = textBox1.Text;
                     string password = textBox3.Text;
 
-                    string qury = "INSERT INTO App_Users(User_ID,User_Name,User_Password) " +
-                                  "VALUES ('" + userID + "', '" + name + "', '" + password + "');";
-                    SqlCommand cmd = new SqlCommand(qury, sqlcon);
+                    string qury = "INSERT INTO `App_Users` (`User_Name`,`User_Password`) " +
+                                  "VALUES ('" + name + "', '" + password + "');";
+                    MySqlCommand cmd = new MySqlCommand(qury, mycon);
                     int done = cmd.ExecuteNonQuery();
 
                     if(done>0)
@@ -122,7 +124,7 @@ namespace Tiger_Services_Ticketing_App
                         MessageBox.Show("Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         resetAll("All");
                     }
-                    sqlcon.Close();
+                    mycon.Close();
                     loaddata();
                 }
                 else

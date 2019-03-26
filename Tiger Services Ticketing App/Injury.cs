@@ -9,21 +9,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class Injury : Form
     {
-        private SqlConnection sqlcon;
-        private string com_ID;
-        private string pcname = "";
+        private MySqlConnection mycon;
+        private string constring;
         Boolean Keywarn = false;
+        private string com_ID;
         public Injury()
         {
             InitializeComponent();
-            pcname = System.Environment.MachineName;
-            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+                mycon.Close();
 
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Injury_Load(object sender, EventArgs e)
@@ -97,22 +109,21 @@ namespace Tiger_Services_Ticketing_App
                     string companyTime = comboBox4.SelectedItem.ToString();
 
 
-                    string query = "INSERT INTO  Injury(Injury_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Injury, Date_Of_Injury, Uploaded_Files," +
-                                    "Team_Member,Customer_or_guest,Age_Injured_Person,Injured_PersonName,Hospitalisation,Nature_of_Injury,Cause_of_Injury,Firstaid_provided,Firstaid_PersonName,Comapany_ContactedTime,Ticket_Status) " +
-                                   "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "'," +
+                    string query = "INSERT INTO `Injury`(`Injury_Code`, `Name`, `Phone`, `Address`, `EMail`, `P_R_Name`, `P_R_Phone`, `P_R_EMail`, `Details`, `Time_Of_Injury`, `Date_Of_Injury`, `Uploaded_Files`, `Team_Member`, `Customer_or_guest`, `Age_Injured_Person`, `Injured_PersonName`, `Hospitalisation`, `Nature_of_Injury`, `Cause_of_Injury`, `Firstaid_provided`, `Firstaid_PersonName`, `Comapany_ContactedTime`, `Ticket_Status`) " +
+                                   "VALUES ('"+ com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "'," +
                                    "'" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "'," +
                                    "'" + Teammember + "','" + CusorGuest + "','" + age + "','" + In_PName + "','" + hospital + "','" + nature + "','" + cause + "','" + firstaid_done + "','" + who_doneFA + "','" + companyTime + "','Open');";
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    MySqlCommand cmd = new MySqlCommand(query, mycon);
                     try
                     {
-                        sqlcon.Open();
+                        mycon.Open();
 
                         int number = cmd.ExecuteNonQuery();
-                        sqlcon.Close();
+                        mycon.Close();
                         if (number > 0)
                         {
                             MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            sqlcon.Close();
+                            mycon.Close();
 
                             if (!label12.Text.Equals("No Files Selected"))
                             {
@@ -166,15 +177,15 @@ namespace Tiger_Services_Ticketing_App
         private void loadID()
         {
 
-            sqlcon.Open();
+            mycon.Open();
             string getquery = "SELECT * FROM Injury ";
-            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
+            MySqlDataAdapter sd = new MySqlDataAdapter(getquery, mycon);
             DataTable dt = new DataTable();
             sd.Fill(dt);
             int count = dt.Rows.Count + 1;
             //getting the entered Complaints to create the new Complaint ID
-            com_ID = "";
 
+            com_ID = "";
             if (count < 10)
             {
                 com_ID = "Injury_0000" + count;
@@ -199,7 +210,7 @@ namespace Tiger_Services_Ticketing_App
             this.Text = "Customer Injury ID - " + com_ID;
 
 
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void resetAll()

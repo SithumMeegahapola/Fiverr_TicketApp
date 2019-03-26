@@ -7,24 +7,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 using System.IO;
+using MySql.Data.MySqlClient;
 
 namespace Tiger_Services_Ticketing_App
 {
     public partial class Customer_Compliment : Form
     {
 
-        private SqlConnection sqlcon;
-        private string com_ID;
-        private string pcname = "";
+        private MySqlConnection mycon;
+        private string com_ID;     
+        private string constring;
         
         public Customer_Compliment()
         {
             InitializeComponent();
 
-            pcname = System.Environment.MachineName;
-            sqlcon = new SqlConnection(@"Data Source=" + pcname + ";Initial Catalog=TS_Ticketing;Persist Security Info=True;User ID=sa;Password=TSSQL_db");
+            constring = "SERVER= 206.189.145.254;PORT=3306;DATABASE=TS_Ticketing;UID=root;PASSWORD=pass";
+            try
+            {
+                mycon = new MySqlConnection();
+                mycon.ConnectionString = constring;
+                mycon.Open();
+                mycon.Close();
+
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
         private void Customer_Compliment_Load(object sender, EventArgs e)
         {
@@ -87,18 +100,18 @@ namespace Tiger_Services_Ticketing_App
                     string Time = dateTimePicker2.Value.ToShortTimeString();
 
 
-                    string query = "INSERT INTO  Customer_Compliment(Compliment_ID , Name, Phone, Address, EMail, P_R_Name, P_R_Phone, P_R_EMail, Details, Time_Of_Compliment, Date_Of_Compliment, Uploaded_Files, Ticket_Status) " +
-                                   "VALUES ('" + com_ID + "','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
+                    string query = "INSERT INTO `Customer_Compliment`(`Complaint_Code`, `Name`, `Phone`, `Address`, `EMail`, `P_R_Name`, `P_R_Phone`, `P_R_EMail`, `Details`, `Time_Of_Compliment`, `Date_Of_Compliment`, `Uploaded_Files`, `Ticket_Status`) " +
+                                   "VALUES ('"+com_ID+"','" + name + "','" + phone + "','" + address + "','" + email + "','" + PRName + "','" + PRPhone + "','" + PREmail + "','" + Details + "','" + Time + "','" + Date + "','" + uploadedfilenames + "','Open');";
+                    MySqlCommand cmd = new MySqlCommand(query, mycon);
                     try
                     {
-                        sqlcon.Open();
+                        mycon.Open();
                         int number = cmd.ExecuteNonQuery();
-                        sqlcon.Close();
+                        mycon.Close();
                         if (number > 0)
                         {
                             MessageBox.Show("Ticket has been saved successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            sqlcon.Close();
+                            mycon.Close();
                             if (!label12.Text.Equals("No Files Selected"))
                             {
                                 //copying the files to folder
@@ -173,12 +186,12 @@ namespace Tiger_Services_Ticketing_App
         private void loadID()
         {
 
-            sqlcon.Open();
-            string getquery = "SELECT * FROM Customer_Compliment ";
-            SqlDataAdapter sd = new SqlDataAdapter(getquery, sqlcon);
+            mycon.Open();
+            string getquery = "SELECT * FROM `Customer_Compliment` ";
+            MySqlDataAdapter sd = new MySqlDataAdapter(getquery, mycon);
             DataTable dt = new DataTable();
             sd.Fill(dt);
-            int count = dt.Rows.Count + 1;
+            int count = dt.Rows.Count+1;
             //getting the entered Complaints to create the new Complaint ID
             com_ID = "";
 
@@ -206,7 +219,7 @@ namespace Tiger_Services_Ticketing_App
             this.Text = "Customer Compliment ID - " + com_ID;
 
 
-            sqlcon.Close();
+            mycon.Close();
         }
 
         private void resetAll()
