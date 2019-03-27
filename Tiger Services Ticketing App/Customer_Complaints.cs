@@ -17,7 +17,7 @@ namespace Tiger_Services_Ticketing_App
         private MySqlConnection mycon;
         private string constring;
         private string com_ID;
-        private Boolean keywarn = false;
+      
         public Customer_Complaints()
         {
             InitializeComponent();
@@ -169,6 +169,7 @@ namespace Tiger_Services_Ticketing_App
 
                                 }
                             }
+                           
                             resetAll();
                             loadID();
 

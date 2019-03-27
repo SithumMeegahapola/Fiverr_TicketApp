@@ -19,7 +19,7 @@ namespace Tiger_Services_Ticketing_App
         private MySqlConnection mycon;
         private string com_ID;
         private string constring;
-        Boolean Keywarn = false;
+       
         public Third_Party()
         {
             InitializeComponent();
@@ -119,7 +119,7 @@ namespace Tiger_Services_Ticketing_App
                             if (!label12.Text.Equals("No Files Selected"))
                             {
                                 //copying the files to folder
-                                string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Thurd_Party_Claim\");
+                                string path = Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Third_Party_Claim\");
 
                                 string destpath = path + com_ID;
                                 string sourcefile = "";
@@ -175,12 +175,12 @@ namespace Tiger_Services_Ticketing_App
 
                 }
                 string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\");
-                if (!System.IO.Directory.Exists(path + "Thurd_Party_Claim"))
+                if (!System.IO.Directory.Exists(path + "Third_Party_Claim"))
                 {
-                    System.IO.Directory.CreateDirectory(path + "Thurd_Party_Claim");
+                    System.IO.Directory.CreateDirectory(path + "Third_Party_Claim");
 
                 }
-                string finalpath = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Thurd_Party_Claim\");
+                string finalpath = System.IO.Path.Combine(Environment.CurrentDirectory, @"Uploaded_Data\Third_Party_Claim\");
 
                 System.IO.Directory.CreateDirectory(finalpath + com_ID);
 

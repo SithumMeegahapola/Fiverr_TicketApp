@@ -17,7 +17,7 @@ namespace Tiger_Services_Ticketing_App
     {
         private MySqlConnection mycon;
         private string constring;
-        Boolean Keywarn = false;
+       
         private string com_ID;
         public Injury()
         {

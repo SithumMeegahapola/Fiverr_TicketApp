@@ -42,6 +42,7 @@ namespace Tiger_Services_Ticketing_App
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
+                Application.Exit();
             }
         }
 
@@ -66,12 +67,24 @@ namespace Tiger_Services_Ticketing_App
             {
                 MessageBox.Show("Invalid Credentiols");
                 mycon.Close();
+                RestAll();
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            RestAll();
+        }
+
+        private void RestAll ()
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
         }
     }
 }

@@ -14,10 +14,10 @@ namespace Tiger_Services_Ticketing_App
 {
     public partial class User_Managment : Form
     {
-        MySqlConnection mycon;
-        string constring;
+        private MySqlConnection mycon;
+        private string constring;
 
-        string userID = "USER-";
+        private string userID;
         public User_Managment()
         {
             InitializeComponent();
@@ -57,9 +57,22 @@ namespace Tiger_Services_Ticketing_App
             myda.Fill(dt);
             dataGridView1.DataSource = dt;
 
-            int count = dataGridView1.Rows.Count;
-           
-            textBox4.Text = userID+(count+1);
+            int count = dataGridView1.Rows.Count+1;
+             if(count<10)
+            {
+                userID = "USR-00" + count;
+;           }
+             else if (count <100)
+            {
+                userID = "USR-0" + count;
+            }
+             else if (count <1000)
+            {
+                userID = "USR-" + count;
+            }
+            textBox4.Text = userID;
+            
+
             mycon.Close();
         }
 
@@ -108,8 +121,8 @@ namespace Tiger_Services_Ticketing_App
                     string name = textBox1.Text;
                     string password = textBox3.Text;
 
-                    string qury = "INSERT INTO `App_Users` (`User_Name`,`User_Password`) " +
-                                  "VALUES ('" + name + "', '" + password + "');";
+                    string qury = "INSERT INTO `App_Users` (`User_Code`,`User_Name`,`User_Password`) " +
+                                  "VALUES ('"+userID+"','" + name + "', '" + password + "');";
                     MySqlCommand cmd = new MySqlCommand(qury, mycon);
                     int done = cmd.ExecuteNonQuery();
 
